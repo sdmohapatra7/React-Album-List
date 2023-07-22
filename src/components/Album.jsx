@@ -4,6 +4,8 @@ export default function Album() {
     const [albums, setAlbums] = useState([]);
     const [newAlbumTitle, setNewAlbumTitle] = useState('');
     const [updateAlbumId, setUpdateAlbumId] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [albumsPerPage] = useState(5);
 
     useEffect(() => {
         fetchAlbums();
@@ -75,6 +77,7 @@ export default function Album() {
             );
             setAlbums(updatedAlbums);
             setUpdateAlbumId(null);
+            setNewAlbumTitle('');
         } catch (error) {
             console.error(error);
         }
@@ -97,6 +100,15 @@ export default function Album() {
         }
     };
 
+    // Get current albums based on current page
+    const indexOfLastAlbum = currentPage * albumsPerPage;
+    const indexOfFirstAlbum = indexOfLastAlbum - albumsPerPage;
+    const currentAlbums = albums.slice(indexOfFirstAlbum, indexOfLastAlbum);
+
+    // Change page
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+
     return (
         <div>
             <div>
@@ -109,7 +121,7 @@ export default function Album() {
                 <button onClick={handleAddAlbum}>Add Album</button>
             </div>
             <ul>
-                {albums.map(album => (
+                {currentAlbums.map(album => (
                     <li key={album.id}>
                         {updateAlbumId === album.id ? (
                             <input
@@ -122,9 +134,12 @@ export default function Album() {
                         )}
                         <div>
                             {updateAlbumId === album.id ? (
+                                <>
                                 <button onClick={() => saveUpdatedAlbumTitle(album.id, newAlbumTitle)}>
                                     Save
                                 </button>
+                                <button onClick={() => setUpdateAlbumId(null)}>Cancel</button>
+                                </>
                             ) : (
                                 <button onClick={() => handleUpdateAlbum(album.id)}>Update</button>
                             )}
@@ -133,6 +148,14 @@ export default function Album() {
                     </li>
                 ))}
             </ul>
+            {/* Pagination */}
+            <div className="pagination">
+                {Array.from({ length: Math.ceil(albums.length / albumsPerPage) }).map((_, index) => (
+                    <button key={index + 1} onClick={() => paginate(index + 1)}>
+                        {index + 1}
+                    </button>
+                ))}
+            </div>
         </div>
     )
 }
