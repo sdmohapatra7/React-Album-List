@@ -106,7 +106,21 @@ export default function Album() {
     const currentAlbums = albums.slice(indexOfFirstAlbum, indexOfLastAlbum);
 
     // Change page
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    // const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    // Previous page
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    // Next page
+    const handleNextPage = () => {
+        if (currentPage < Math.ceil(albums.length / albumsPerPage)) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
 
     return (
@@ -135,10 +149,10 @@ export default function Album() {
                         <div>
                             {updateAlbumId === album.id ? (
                                 <>
-                                <button onClick={() => saveUpdatedAlbumTitle(album.id, newAlbumTitle)}>
-                                    Save
-                                </button>
-                                <button onClick={() => setUpdateAlbumId(null)}>Cancel</button>
+                                    <button onClick={() => saveUpdatedAlbumTitle(album.id, newAlbumTitle)}>
+                                        Save
+                                    </button>
+                                    <button onClick={() => setUpdateAlbumId(null)}>Cancel</button>
                                 </>
                             ) : (
                                 <button onClick={() => handleUpdateAlbum(album.id)}>Update</button>
@@ -150,11 +164,24 @@ export default function Album() {
             </ul>
             {/* Pagination */}
             <div className="pagination">
-                {Array.from({ length: Math.ceil(albums.length / albumsPerPage) }).map((_, index) => (
-                    <button key={index + 1} onClick={() => paginate(index + 1)}>
+                <button onClick={handlePrevPage} disabled={currentPage === 1}>
+                    Previous
+                </button>
+                {/* {Array.from({ length: Math.ceil(albums.length / albumsPerPage) }).map((_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => paginate(index + 1)}
+                        disabled={currentPage === index + 1}
+                    >
                         {index + 1}
                     </button>
-                ))}
+                ))} */}
+                <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === Math.ceil(albums.length / albumsPerPage)}
+                >
+                    Next
+                </button>
             </div>
         </div>
     )
